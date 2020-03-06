@@ -26,7 +26,7 @@ jobs:
         pip install -r requirements_tests.txt
     - name: Install package
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py install sdist bdist_wheel
         twine check dist/*
     - name: Lint with flake8
       run: |
