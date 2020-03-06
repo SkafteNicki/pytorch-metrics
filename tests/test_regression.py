@@ -53,6 +53,33 @@ def test_multi_update_cpu(metric, baseline):
     
     assert abs(m_val - base_val) < TOL
 
+@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)    
+def test_single_update_gpu(metric, baseline):
+    pred=np.random.randn(100,)
+    target=np.random.randn(100,)
+    
+    m = metric(device='cuda')
+    m.update(torch.tensor(pred, device='cuda'),
+             torch.tensor(target, device='cuda'))
+    m_val = m.compute()
+
+    base_val = baseline(pred, target)
+    
+    assert abs(m_val - base_val) < TOL    
+
+@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
+def test_multi_update_gpu(metric, baseline):
+    baseline_vals = [ ]
+    m = metric(device='cuda')
+    for _ in range(10): # do 10 updates
+        pred=np.random.randn(100,)
+        target = np.random.randn(100,)
+        m.update(torch.tensor(pred, device='cuda'), 
+                 torch.tensor(target, device='cuda'))
         
+        baseline_vals.append(baseline(pred, target))
     
+    m_val = m.compute()
+    base_val = np.array(baseline_vals).mean()
     
+    assert abs(m_val - base_val) < TOL
