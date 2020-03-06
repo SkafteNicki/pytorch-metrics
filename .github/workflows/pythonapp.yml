@@ -1,7 +1,6 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# This workflow will install Python dependencies, run tests and lint 
 
-name: Python application
+name: Pytorch metrics module
 
 on:
   push:
@@ -19,13 +18,14 @@ jobs:
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: 3.8
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements_tests.txt
     - name: Install package
+      run: |
         python setup.py sdist bdist_wheel
         twine check dist/*
     - name: Lint with flake8
