@@ -1,0 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar  6 08:35:16 2020
+
+@author: nsde
+"""
+
+scikit-learn>=0.22.0
