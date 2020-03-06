@@ -5,9 +5,9 @@ Created on Fri Mar  6 08:41:22 2020
 @author: nsde
 """
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
-class Metric(ABCMeta):
+class Metric(ABC):
     """
     Base class
     """
@@ -16,6 +16,8 @@ class Metric(ABCMeta):
                  device = None):
         self.transform = transform
         
+        # Initialize metric variables
+        self.reset()
         
     @abstractmethod
     def reset(self):
