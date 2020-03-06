@@ -12,6 +12,8 @@ from sklearn.metrics import (mean_squared_error,
                              mean_absolute_error)
 import pytest
 
+TOL = 1e-2
+
 def root_mean_squared_error(y_true, y_pred):
     return math.sqrt(mean_squared_error(y_true, y_pred))
 
@@ -23,7 +25,7 @@ def idfn(val):
     return str(val)
 
 @pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
-def test_metrics(metric, baseline):
+def test_single_update_cpu(metric, baseline):
     pred=np.random.randn(100,)
     target=np.random.randn(100,)
     
@@ -33,4 +35,24 @@ def test_metrics(metric, baseline):
 
     base_val = baseline(pred, target)
     
-    assert abs(m_val - base_val) < 1e-4
+    assert abs(m_val - base_val) < TOL
+    
+@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
+def test_multi_update_cpu(metric, baseline):
+    baseline_vals = [ ]
+    m = metric()
+    for _ in range(10): # do 10 updates
+        pred=np.random.randn(100,)
+        target = np.random.randn(100,)
+        m.update(torch.tensor(pred), torch.tensor(target))
+        
+        baseline_vals.append(baseline(pred, target))
+    
+    m_val = m.compute()
+    base_val = np.array(baseline_vals).mean()
+    
+    assert abs(m_val - base_val) < TOL
+
+        
+    
+    
