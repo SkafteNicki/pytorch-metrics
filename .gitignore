@@ -1,3 +1,24 @@
 # Spyder project settings
 .spyderproject
 .spyproject
+
+# Distribution / packaging
+.Python
+ide_layouts/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Byte-compiled / optimized / DLL files
+__pycache__/

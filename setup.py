@@ -9,8 +9,6 @@ from io import open
 
 from setuptools import setup, find_packages
 
-import pytorch_metrics as pm
-
 
 PATH_ROOT = os.path.dirname(__file__)
 def load_requirements(path_dir=PATH_ROOT, comment_char='#'):
@@ -26,9 +24,14 @@ def load_requirements(path_dir=PATH_ROOT, comment_char='#'):
     return reqs
 
 setup(name='pytorch-metrics',
-      version=pm.__version__,
-      description=pm.__description__,
+      version='0.1',
+      author='Nicki Skafte Detlefsen',
+      author_email='nsde@dtu.dk',
       packages=find_packages(),
       python_requires='>=3.6',
-      install_requires=load_requirements(PATH_ROOT)
+      install_requires=load_requirements(PATH_ROOT),
+      
+      description= 'Pytorch-metrics is a simple add on library to pytorch that adds '\
+                   'many commonly used metrics within deep learning'
+      
       )

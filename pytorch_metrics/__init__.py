@@ -10,3 +10,7 @@ __author__ = 'Nicki Skafte Detlefsen'
 __author_email__ = 'nsde@dtu.dk'
 __docs__ = 'Pytorch-metrics is a simple add on library to pytorch that adds '\
            'many commonly used metrics within deep learning'
+           
+from .regression import MeanSquaredError
+
+__all__ = ['MeanSquaredError']
