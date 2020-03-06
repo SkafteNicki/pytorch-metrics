@@ -11,11 +11,13 @@ __author_email__ = 'nsde@dtu.dk'
 __docs__ = 'Pytorch-metrics is a simple add on library to pytorch that adds '\
            'many commonly used metrics within deep learning'
            
-from .base import Metric
+from .base import (Metric, MetricDict, RunningAverage)
 from .regression import (MeanSquaredError,
                          MeanAbsoluteError,
                          RootMeanSquaredError)
 __all__ = ['Metric',
+           'MetricDict',
+           'RunningAverage'
            'MeanSquaredError',
            'MeanAbsoluteError',
            'RootMeanSquaredError']
