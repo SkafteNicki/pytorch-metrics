@@ -1,22 +1,19 @@
-<div align="center">
-![Logo](docs/logo.svg)
-</div>
----
-Disclaimer: Work in progress.
 
+![Logo](docs/logo.png)
+
+---
 The library is a collection o the most used metrics within deep learning in
 pytorch. The library is hugely inspiret by [ignites.Metric](https://pytorch.org/ignite/metrics.html)
 module, but is intented to be a standalon library for only computing metrics 
-on pytorch tensor. 
+on pytorch tensor. The goal is to get as many of the [sklearn.metrics](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.metrics) ported to pytorch.
 
-Availble metrics:
+Availble metrics (for now):
 * Regression metrics
     - MeanSquaredError
     - MeanAbsoluteError
     - RootMeanSquaredError
 * Classification metrics
     - Accuracy
-    - Recall 
     
 ## The API
 When evaluating metrics, there are commonly two use cases:
