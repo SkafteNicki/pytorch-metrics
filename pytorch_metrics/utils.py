@@ -9,6 +9,12 @@ from typing import Callable
 from .base import Metric
 from functools import wraps
 
+def check_non_zero_sample_size(sample_size):
+    if sample_size == 0:
+        raise RuntimeError(
+                'Must have one sample, before compute can be called'
+                )
+
 def sync_all_reduce(*attrs) -> Callable:
     def wrapper(func: Callable) -> Callable:
         @wraps(func)

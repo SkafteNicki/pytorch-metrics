@@ -19,9 +19,12 @@ from .regression import (MeanSquaredError,
                          MeanAbsoluteError,
                          RootMeanSquaredError)
 
+from .classification import (Accuracy)
+
 __all__ = ['Metric',
            'MetricDict',
            'RunningAverage'
            'MeanSquaredError',
            'MeanAbsoluteError',
-           'RootMeanSquaredError']
+           'RootMeanSquaredError',
+           'Accuracy']

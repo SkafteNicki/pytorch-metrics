@@ -16,7 +16,7 @@ class Metric(ABC):
     """
 
     def __init__(self,
-                 transform=lambda x: x,
+                 transform=lambda x,y: (x,y),
                  device=None):
         self.transform = transform
         
@@ -38,7 +38,14 @@ class Metric(ABC):
         
         # Initialize metric variables
         self.reset()
-
+    
+    def __call__(self, target, pred):
+        self.reset()
+        self.update(target, pred)
+        val = self.compute()
+        self.reset()
+        return val
+    
     @abstractmethod
     def reset(self):
         pass

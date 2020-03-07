@@ -11,7 +11,10 @@ import pytorch_metrics as pm
 from sklearn.metrics import (mean_squared_error,
                              mean_absolute_error)
 import pytest
+from testing_utils import can_run_gpu_test, can_run_multi_gpu_test
 
+single_gpu = can_run_gpu_test()
+multi_gpu = can_run_multi_gpu_test()
 TOL = 1e-2
 
 def root_mean_squared_error(y_true, y_pred):
@@ -30,9 +33,7 @@ def test_single_update_cpu(metric, baseline):
     target=np.random.randn(100,)
     
     m = metric()
-    m.update(torch.tensor(pred), torch.tensor(target))
-    m_val = m.compute()
-
+    m_val = m(torch.tensor(pred), torch.tensor(target))
     base_val = baseline(pred, target)
     
     assert abs(m_val - base_val) < TOL
@@ -53,20 +54,21 @@ def test_multi_update_cpu(metric, baseline):
     
     assert abs(m_val - base_val) < TOL
 
+@pytest.mark.skipif(not single_gpu, reason="Requires gpu")
 @pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)    
 def test_single_update_gpu(metric, baseline):
     pred=np.random.randn(100,)
     target=np.random.randn(100,)
     
     m = metric(device='cuda')
-    m.update(torch.tensor(pred, device='cuda'),
-             torch.tensor(target, device='cuda'))
-    m_val = m.compute()
+    m_val = m(torch.tensor(pred, device='cuda'),
+              torch.tensor(target, device='cuda'))
 
     base_val = baseline(pred, target)
     
     assert abs(m_val - base_val) < TOL    
 
+@pytest.mark.skipif(not single_gpu, reason="Requires gpu")
 @pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
 def test_multi_update_gpu(metric, baseline):
     baseline_vals = [ ]
@@ -83,3 +85,15 @@ def test_multi_update_gpu(metric, baseline):
     base_val = np.array(baseline_vals).mean()
     
     assert abs(m_val - base_val) < TOL
+
+@pytest.mark.skipif(not multi_gpu, reason="Requires multiple gpus")
+@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
+def test_single_update_ddp(metric, baseline):
+    pass
+
+@pytest.mark.skipif(not multi_gpu, reason="Requires multiple gpus")
+@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
+def test_multi_update_ddp(metric, baseline):
+    pass
+
+    
