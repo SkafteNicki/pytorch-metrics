@@ -20,7 +20,11 @@ from .regression import (MeanSquaredError,
                          RootMeanSquaredError,
                          ExplainedVariance,
                          R2Score,
-                         MaxError)
+                         MaxError,
+                         MeanSquaredLogarithmicError,
+                         MeanTweedieDeviance,
+                         MeanPoissonDeviance,
+                         MeanGammaDeviance)
 
 from .classification import (Accuracy)
 
@@ -33,4 +37,8 @@ __all__ = ['Metric',
            'ExplainedVariance',
            'R2Score',
            'MaxError',
+           'MeanSquaredLogarithmicError'
+           'MeanTweedieDeviance',
+           'MeanPoissonDeviance',
+           'MeanGammaDeviance',
            'Accuracy']

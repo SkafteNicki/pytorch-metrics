@@ -11,3 +11,7 @@ from .rootmeansquarederror import RootMeanSquaredError
 from .explainedvariance import ExplainedVariance
 from .r2score import R2Score
 from .maxerror import MaxError
+from .meansquaredlogarithmicerror import MeanSquaredLogarithmicError
+from .meantweediedeviance import MeanTweedieDeviance
+from .meanpoissondeviance import MeanPoissonDeviance
+from .meangammadeviance import MeanGammaDeviance
