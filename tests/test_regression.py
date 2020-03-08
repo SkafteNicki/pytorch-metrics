@@ -11,7 +11,8 @@ import pytorch_metrics as pm
 from sklearn.metrics import (mean_squared_error,
                              mean_absolute_error,
                              explained_variance_score,
-                             r2_score)
+                             r2_score,
+                             max_error as _max_error)
 import pytest
 from testing_utils import can_run_gpu_test
 
@@ -28,11 +29,18 @@ def root_mean_squared_error(y_true, y_pred, multioutput='uniform_average'):
     except:
         return np.sqrt(val)
 
+def max_error(y_true, y_pred, multioutput='uniform_average'):
+    if multioutput == 'uniform_average':
+        return _max_error(y_true, y_pred)
+    else:
+        return np.array([_max_error(yt, yp) for yt, yp in zip(y_true.T, y_pred.T)])
+
 test_list = [(pm.MeanSquaredError, mean_squared_error),
              (pm.MeanAbsoluteError, mean_absolute_error),
              (pm.RootMeanSquaredError, root_mean_squared_error),
              (pm.ExplainedVariance, explained_variance_score),
-             (pm.R2Score, r2_score)]
+             (pm.R2Score, r2_score),
+             (pm.MaxError, max_error)]
 
 def idfn(val):
     return str(val)

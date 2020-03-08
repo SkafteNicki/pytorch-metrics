@@ -10,3 +10,4 @@ from .meanabsoluterror import MeanAbsoluteError
 from .rootmeansquarederror import RootMeanSquaredError
 from .explainedvariance import ExplainedVariance
 from .r2score import R2Score
+from .maxerror import MaxError

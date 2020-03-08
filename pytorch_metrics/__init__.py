@@ -19,7 +19,8 @@ from .regression import (MeanSquaredError,
                          MeanAbsoluteError,
                          RootMeanSquaredError,
                          ExplainedVariance,
-                         R2Score)
+                         R2Score,
+                         MaxError)
 
 from .classification import (Accuracy)
 
@@ -31,4 +32,5 @@ __all__ = ['Metric',
            'RootMeanSquaredError',
            'ExplainedVariance',
            'R2Score',
+           'MaxError',
            'Accuracy']
