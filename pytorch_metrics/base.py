@@ -4,37 +4,19 @@ Created on Fri Mar  6 08:41:22 2020
 
 @author: nsde
 """
-import numbers
-import torch
-import warnings
+
 from abc import ABC, abstractmethod
-import torch.distributed as dist
+from copy import deepcopy
+from .utils import atleast_2d
 
 class Metric(ABC):
     """
     Base class
     """
-
+    memory_efficient = True
     def __init__(self,
-                 transform=lambda x,y: (x,y),
-                 device=None):
+                 transform=lambda x,y: (x,y)):
         self.transform = transform
-        
-        # Check device if distributed is initialized:
-        if dist.is_available() and dist.is_initialized():
-
-            # check if reset and update methods are decorated. Compute may not be decorated
-            if not (hasattr(self.reset, "_decorated") and hasattr(self.update, "_decorated")):
-                warnings.warn(
-                    "{} class does not support distributed setting. Computed result is not collected "
-                    "across all computing devices".format(self.__class__.__name__),
-                    RuntimeWarning,
-                )
-            if device is None:
-                device = "cuda"
-            device = torch.device(device)
-        self._device = device
-        self._is_reduced = False
         
         # Initialize metric variables
         self.reset()
@@ -58,31 +40,9 @@ class Metric(ABC):
     def compute(self):
         pass
     
-    def _sync_all_reduce(self, tensor):
-        if not (dist.is_available() and dist.is_initialized()):
-            # Nothing to reduce
-            return tensor
-
-        tensor_to_number = False
-        if isinstance(tensor, numbers.Number):
-            tensor = torch.tensor(tensor, device=self._device)
-            tensor_to_number = True
-
-        if isinstance(tensor, torch.Tensor):
-            # check if the tensor is at specified device
-            if tensor.device != self._device:
-                tensor = tensor.to(self._device)
-        else:
-            raise TypeError("Unhandled input type {}".format(type(tensor)))
-
-        # synchronize and reduce
-        dist.barrier()
-        dist.all_reduce(tensor)
-
-        if tensor_to_number:
-            return tensor.item()
-        return tensor
-
+    def tobatch(self, *tensor):
+        return [atleast_2d(t) for t in tensor]
+    
 
 class MetricDict(Metric):
     """
@@ -109,8 +69,7 @@ class MetricDict(Metric):
 class RunningAverage(Metric):
     def __init__(self,
                  base_metric,
-                 alpha=0.98,
-                 device=None):
+                 alpha=0.98):
         self.base_metric = base_metric
         self.alpha = alpha
 
@@ -128,3 +87,22 @@ class RunningAverage(Metric):
             self._running = self._running * self.alpha + \
                 (1-self.alpha) * self.base_metric.compute()
         return self._running
+    
+class BatchedMetric(Metric):
+    def __init__(self,
+                 base_metric,
+                 batch_size,
+                 dim=0):
+        self.base_metrics = [deepcopy(base_metric) for _ in range(batch_size)]
+        self.batch_size = batch_size
+        self.dim = dim
+        
+    def reset(self):
+        [m.reset() for m in self.base_metrics()]
+        
+    def update(self, target, pred):
+        for i, m in enumerate(self.base_metrics):
+            m.update(target[i], pred[i])
+        
+    def compute(self):
+        return [m.compute for m in self.base_metrics]

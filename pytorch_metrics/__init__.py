@@ -17,7 +17,9 @@ from .base import (Metric,
 
 from .regression import (MeanSquaredError,
                          MeanAbsoluteError,
-                         RootMeanSquaredError)
+                         RootMeanSquaredError,
+                         ExplainedVariance,
+                         R2Score)
 
 from .classification import (Accuracy)
 
@@ -27,4 +29,6 @@ __all__ = ['Metric',
            'MeanSquaredError',
            'MeanAbsoluteError',
            'RootMeanSquaredError',
+           'ExplainedVariance',
+           'R2Score',
            'Accuracy']

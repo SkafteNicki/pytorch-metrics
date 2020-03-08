@@ -8,3 +8,5 @@ Created on Fri Mar  6 09:14:44 2020
 from .meansquarederror import MeanSquaredError
 from .meanabsoluterror import MeanAbsoluteError
 from .rootmeansquarederror import RootMeanSquaredError
+from .explainedvariance import ExplainedVariance
+from .r2score import R2Score

@@ -8,6 +8,12 @@ import math
 from .meansquarederror import MeanSquaredError
 
 class RootMeanSquaredError(MeanSquaredError):
+    name = 'rootmeansquarederror'
+    memory_efficient = True
+    
     def compute(self):
         mse = super().compute()
-        return math.sqrt(mse)
+        try:
+            return math.sqrt(mse)  # number
+        except:
+            return mse.sqrt() # tensor
