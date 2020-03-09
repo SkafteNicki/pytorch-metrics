@@ -11,7 +11,7 @@ from pytorch_metrics.utils import check_non_zero_sample_size
 
 
 class ExplainedVariance(Metric):
-    name = 'explainedvariance'
+    name = "explainedvariance"
     memory_efficient = False
 
     def reset(self):

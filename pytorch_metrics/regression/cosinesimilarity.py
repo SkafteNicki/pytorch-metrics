@@ -9,16 +9,17 @@ import torch
 from pytorch_metrics import Metric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
+
 class CosineSimilarity(Metric):
-    name = 'cosinesimilarity'
+    name = "cosinesimilarity"
     memory_efficient = True
-    
+
     def reset(self):
         self._dot_xy = 0
         self._norm_x = 0
         self._norm_y = 0
         self._n = 0
-    
+
     def update(self, target, pred):
         target, pred = self.transform(target, pred)
         self._dot_xy += (target * pred).sum(dim=0)

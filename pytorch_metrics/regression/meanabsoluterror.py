@@ -11,7 +11,7 @@ from pytorch_metrics.utils import check_non_zero_sample_size
 
 
 class MeanAbsoluteError(Metric):
-    name = 'meanabsoluteerror'
+    name = "meanabsoluteerror"
     memory_efficient = True
 
     def reset(self):

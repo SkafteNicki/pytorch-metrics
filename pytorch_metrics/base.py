@@ -47,25 +47,23 @@ class Metric(ABC):
         return [atleast_2d(t) for t in tensor]
 
 
-class MetricDict(Metric):
+class MetricCollection(Metric):
     """
     For multiple metrics
     """
 
-    def __init__(self,
-                 metric_dict=None,
-                 metric_list=None):
-        if metric_dict is None and metric_list is None:
-            raise ValueError(
-                'Either metric_dict or metric_list needs to be defined')
-        if metric_dict is not None and metric_list is not None:
-            raise ValueError(
-                'Only metric_dict or metric_list should be passed')
-        if metric_dict is not None:
-            self.metrics = metric_dict
-        if metric_list is not None:
-            self.metrics = {(m.name, m) for m in metric_list}
-
+    def __init__(self, metrics):
+        if isinstance(metrics, dict):
+            self.metrics = metrics
+        elif isinstance(metrics, list):
+            self.metrics = dict((m.name, m) for m in metrics)
+        else:
+            raise ValueError('Expected input to MetricCollection, to either be'
+                             ' a dist or list of metrics. Got {0}'.format(metrics))
+        for i, m in enumerate(self.metrics.values()):
+            assert isinstance(m, Metric), 'Metric {0} passed to MetricCollection'\
+                ' is not a valid Metric'
+        
         # Initialize metric variables
         self.reset()
 
@@ -76,7 +74,7 @@ class MetricDict(Metric):
         [m.update(target, pred) for m in self.metrics.values()]
 
     def compute(self):
-        return {[(k, m.compute()) for k, m in self.metrics.items()]}
+        return dict((k, m.compute()) for k, m in self.metrics.items())
 
 
 class RunningAverage(Metric):
