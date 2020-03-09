@@ -43,7 +43,7 @@ def idfn(val):
 def test_running_average(metric, baseline):
     alpha = 0.90
     n_repeats = 3
-    TOL = 0.05  # TODO: make this more robust
+    TOL = 0.1  # TODO: make this more robust
 
     base_val = []
     m = pm.RunningAverage(metric(), alpha=alpha)
@@ -92,3 +92,22 @@ def test_metric_dict():
         m2.name: val2,
         m3.name: val3,
     }, "MetricCollection not updated correctly"
+
+
+test_list = [(pm.Sum, np.sum), (pm.Mean, np.mean), (pm.Product, np.product)]
+
+
+@pytest.mark.parametrize("metric_reduction, baseline", test_list, ids=idfn)
+def test_reductions(metric_reduction, baseline):
+
+    target = np.random.randn(N_SAMPLE * N_UPDATE, N_DIM)
+    pred = np.random.randn(N_SAMPLE * N_UPDATE, N_DIM)
+
+    m = metric_reduction(pm.MeanSquaredError())
+    for i in range(N_UPDATE):  # do 10 updates
+        m.update(torch.tensor(target[i::N_UPDATE]), torch.tensor(pred[i::N_UPDATE]))
+    m_val = m.compute()
+
+    base_val = baseline(mean_squared_error(target, pred, multioutput="raw_values"))
+
+    assert abs(m_val - base_val) < TOL

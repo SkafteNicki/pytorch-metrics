@@ -13,7 +13,15 @@ __docs__ = (
     "many commonly used metrics within deep learning"
 )
 
-from .base import Metric, MetricCollection, RunningAverage
+from .base import Metric
+
+from .wrappers import (
+    MetricCollection, 
+    RunningAverage,
+    Mean,
+    Sum,
+    Product
+)
 
 from .regression import (
     MeanSquaredError,
