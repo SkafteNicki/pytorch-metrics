@@ -24,7 +24,8 @@ from .regression import (MeanSquaredError,
                          MeanSquaredLogarithmicError,
                          MeanTweedieDeviance,
                          MeanPoissonDeviance,
-                         MeanGammaDeviance)
+                         MeanGammaDeviance,
+                         CosineSimilarity)
 
 from .classification import (Accuracy)
 

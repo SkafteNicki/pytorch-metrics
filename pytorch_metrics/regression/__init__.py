@@ -15,3 +15,4 @@ from .meansquaredlogarithmicerror import MeanSquaredLogarithmicError
 from .meantweediedeviance import MeanTweedieDeviance
 from .meanpoissondeviance import MeanPoissonDeviance
 from .meangammadeviance import MeanGammaDeviance
+from .cosinesimilarity import CosineSimilarity

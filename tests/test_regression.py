@@ -16,6 +16,8 @@ from sklearn.metrics import (mean_squared_error,
                              mean_squared_log_error,
                              mean_gamma_deviance as _mean_gamma_deviance,
                              mean_poisson_deviance as _mean_poisson_deviance)
+from scipy.spatial.distance import cosine
+
 import pytest
 from testing_utils import (can_run_gpu_test,
                            move_to_positive)
@@ -51,6 +53,12 @@ def mean_poisson_deviance(y_true, y_pred, multioutput='uniform_average'):
     else:
         return np.array([_mean_poisson_deviance(yt, yp) for yt, yp in zip(y_true.T, y_pred.T)])
 
+def cosine_similarity(y_true, y_pred, multioutput='uniform_average'):
+    if multioutput == 'uniform_average':
+        return -(cosine(y_true, y_pred)-1)
+    else:
+        return np.array([-(cosine(yt, yp)-1) for yt, yp in zip(y_true.T, y_pred.T)])
+
 test_list = [(pm.MeanSquaredError, mean_squared_error, None),
              (pm.MeanAbsoluteError, mean_absolute_error, None),
              (pm.RootMeanSquaredError, root_mean_squared_error, None),
@@ -59,7 +67,8 @@ test_list = [(pm.MeanSquaredError, mean_squared_error, None),
              (pm.MaxError, max_error, None),
              (pm.MeanSquaredLogarithmicError, mean_squared_log_error, move_to_positive),
              (pm.MeanGammaDeviance, mean_gamma_deviance, move_to_positive),
-             (pm.MeanPoissonDeviance, mean_poisson_deviance, move_to_positive)]
+             (pm.MeanPoissonDeviance, mean_poisson_deviance, move_to_positive),
+             (pm.CosineSimilarity, cosine_similarity, None)]
 
 def idfn(val):
     return str(val)
