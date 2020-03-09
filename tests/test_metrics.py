@@ -29,7 +29,8 @@ metrics = [(pm.MeanSquaredError, mean_squared_error),
            (pm.MeanAbsoluteError, mean_absolute_error),
            (pm.ExplainedVariance, explained_variance_score)]
 devices = ['cpu', 'cuda']
-test_list = metrics #list(itertools.product(metrics, devices)) #TODO
+test_list = metrics  # list(itertools.product(metrics, devices)) #TODO
+
 
 def idfn(val):
     return str(val)
@@ -38,31 +39,30 @@ def idfn(val):
 # def test_running_average(metric, baseline):
 #     alpha = 0.99
 #     n_repeats = 2
-    
+
 #     base_val=[]
 #     m = pm.RunningAverage(metric(), alpha=alpha)
 #     for _ in range(n_repeats):
 #         target=np.random.randn(N_SAMPLE,)
 #         pred=np.random.randn(N_SAMPLE,)
-        
+
 #         for i in range(N_UPDATE): # do 10 updates
 #             m.update(torch.tensor(target[i::N_UPDATE]), torch.tensor(pred[i::N_UPDATE]))
 #         m_val = m.compute()
-        
+
 #         base_val.append(baseline(target, pred))
-        
+
 #     base_val = sum([b*(alpha)**i for i,b in enumerate(base_val)])
-    
+
 #     assert abs(m_val - base_val) < TOL
-        
+
 # def test_metric_dict1:
 #     metrics = pm.MetricDict([
 #         pm.MeanSquaredError(),
 #         pm.MeanAbsoluteError(),
 #         pm.ExplainedVariance()
 #         ])
-    
-    
-    
+
+
 # def test_metric_dict2:
 #     pass

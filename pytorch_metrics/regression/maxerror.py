@@ -8,13 +8,14 @@ Created on Sun Mar  8 13:11:13 2020
 import torch
 from pytorch_metrics import Metric
 
+
 class MaxError(Metric):
     name = 'maxerror'
     memory_efficient = True
-    
+
     def reset(self):
         self._max_error = torch.tensor([-float('inf')])
-        
+
     def update(self, target, pred):
         target, pred = self.tobatch(target, pred)
         target, pred = self.transform(target, pred)
@@ -27,5 +28,3 @@ class MaxError(Metric):
             return val.item()
         except:
             return val
-
-        

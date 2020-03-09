@@ -9,10 +9,11 @@ import torch
 from pytorch_metrics import Metric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
+
 class MeanAbsoluteError(Metric):
     name = 'meanabsoluteerror'
     memory_efficient = True
-    
+
     def reset(self):
         self._absolut_error = 0
         self._n = 0

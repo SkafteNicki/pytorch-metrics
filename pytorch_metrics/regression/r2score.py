@@ -9,20 +9,21 @@ import torch
 from pytorch_metrics import Metric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
+
 class R2Score(Metric):
     name = 'r2score'
     memory_efficient = False
-    
+
     def reset(self):
-        self._target = [ ]
-        self._pred = [ ]
-    
+        self._target = []
+        self._pred = []
+
     def update(self, target, pred):
         target, pred = self.tobatch(target, pred)
         target, pred = self.transform(target, pred)
         self._target.append(target)
         self._pred.append(pred)
-    
+
     def compute(self):
         check_non_zero_sample_size(len(self._target))
         target = torch.cat(self._target, dim=0)

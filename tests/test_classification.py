@@ -20,6 +20,7 @@ TOL = 1e-2
 
 test_list = [(pm.Accuracy, accuracy_score)]
 
+
 def idfn(val):
     return str(val)
 
@@ -27,13 +28,13 @@ def idfn(val):
 # def test_single_update_cpu(metric, baseline):
 #     pred=np.random.randint(0, 10, 100)
 #     target=np.random.randint(0, 10, 100)
-    
+
 #     m = metric()
 #     m_val = m(torch.tensor(pred), torch.tensor(target))
 #     base_val = baseline(pred, target)
 
 #     assert abs(m_val - base_val) < TOL
-    
+
 # @pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
 # def test_multi_update_cpu(metric, baseline):
 #     baseline_vals = [ ]
@@ -42,10 +43,10 @@ def idfn(val):
 #         pred=np.random.randint(0, 10, 100)
 #         target=np.random.randint(0, 10, 100)
 #         m.update(torch.tensor(pred), torch.tensor(target))
-        
+
 #         baseline_vals.append(baseline(pred, target, normalize=False))
-    
+
 #     m_val = m.compute()
 #     base_val = np.array(baseline_vals).sum() / 1000
-    
+
 #     assert abs(m_val - base_val) < TOL

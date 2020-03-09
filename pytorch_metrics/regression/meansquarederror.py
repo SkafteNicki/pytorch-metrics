@@ -9,14 +9,15 @@ import torch
 from pytorch_metrics import Metric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
+
 class MeanSquaredError(Metric):
     name = 'meansquarederror'
     memory_efficient = True
-    
+
     def reset(self):
         self._squared_error = 0
         self._n = 0
-    
+
     def update(self, target, pred):
         target, pred = self.tobatch(target, pred)
         target, pred = self.transform(target, pred)
@@ -30,4 +31,3 @@ class MeanSquaredError(Metric):
             return val.item()
         except:
             return val
-

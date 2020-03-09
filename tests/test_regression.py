@@ -28,6 +28,7 @@ N_SAMPLE = 100
 N_UPDATE = 5
 N_DIM = 10
 
+
 def root_mean_squared_error(y_true, y_pred, multioutput='uniform_average'):
     val = mean_squared_error(y_true, y_pred, multioutput=multioutput)
     try:
@@ -35,23 +36,27 @@ def root_mean_squared_error(y_true, y_pred, multioutput='uniform_average'):
     except:
         return np.sqrt(val)
 
+
 def max_error(y_true, y_pred, multioutput='uniform_average'):
     if multioutput == 'uniform_average':
         return _max_error(y_true, y_pred)
     else:
         return np.array([_max_error(yt, yp) for yt, yp in zip(y_true.T, y_pred.T)])
-    
+
+
 def mean_gamma_deviance(y_true, y_pred, multioutput='uniform_average'):
     if multioutput == 'uniform_average':
         return _mean_gamma_deviance(y_true, y_pred)
     else:
         return np.array([_mean_gamma_deviance(yt, yp) for yt, yp in zip(y_true.T, y_pred.T)])
-    
+
+
 def mean_poisson_deviance(y_true, y_pred, multioutput='uniform_average'):
     if multioutput == 'uniform_average':
         return _mean_poisson_deviance(y_true, y_pred)
     else:
         return np.array([_mean_poisson_deviance(yt, yp) for yt, yp in zip(y_true.T, y_pred.T)])
+
 
 def cosine_similarity(y_true, y_pred, multioutput='uniform_average'):
     if multioutput == 'uniform_average':
@@ -59,90 +64,99 @@ def cosine_similarity(y_true, y_pred, multioutput='uniform_average'):
     else:
         return np.array([-(cosine(yt, yp)-1) for yt, yp in zip(y_true.T, y_pred.T)])
 
+
 test_list = [(pm.MeanSquaredError, mean_squared_error, None),
              (pm.MeanAbsoluteError, mean_absolute_error, None),
              (pm.RootMeanSquaredError, root_mean_squared_error, None),
              (pm.ExplainedVariance, explained_variance_score, None),
              (pm.R2Score, r2_score, None),
              (pm.MaxError, max_error, None),
-             (pm.MeanSquaredLogarithmicError, mean_squared_log_error, move_to_positive),
+             (pm.MeanSquaredLogarithmicError,
+              mean_squared_log_error, move_to_positive),
              (pm.MeanGammaDeviance, mean_gamma_deviance, move_to_positive),
              (pm.MeanPoissonDeviance, mean_poisson_deviance, move_to_positive),
              (pm.CosineSimilarity, cosine_similarity, None)]
 
+
 def idfn(val):
     return str(val)
 
+
 @pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_single_update_cpu(metric, baseline, constrain):
-    target=np.random.randn(N_SAMPLE,)
-    pred=np.random.randn(N_SAMPLE,)
-    
+    target = np.random.randn(N_SAMPLE,)
+    pred = np.random.randn(N_SAMPLE,)
+
     if constrain:
         target, pred = constrain(target, pred)
-    
+
     m = metric()
     m_val = m(torch.tensor(target), torch.tensor(pred))
     base_val = baseline(target, pred)
-    
+
     assert abs(m_val - base_val) < TOL
-    
+
+
 @pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_multi_update_cpu(metric, baseline, constrain):
     target = np.random.randn(N_SAMPLE*N_UPDATE,)
-    pred=np.random.randn(N_SAMPLE*N_UPDATE,)
-    
+    pred = np.random.randn(N_SAMPLE*N_UPDATE,)
+
     if constrain:
         target, pred = constrain(target, pred)
-    
+
     m = metric()
-    for i in range(N_UPDATE): # do 10 updates
-        m.update(torch.tensor(target[i::N_UPDATE]), torch.tensor(pred[i::N_UPDATE]))
+    for i in range(N_UPDATE):  # do 10 updates
+        m.update(torch.tensor(target[i::N_UPDATE]),
+                 torch.tensor(pred[i::N_UPDATE]))
     m_val = m.compute()
     base_val = baseline(target, pred)
-    
+
     assert abs(m_val - base_val) < TOL
 
+
 @pytest.mark.skipif(not single_gpu, reason="Requires gpu")
-@pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)    
+@pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_single_update_gpu(metric, baseline, constrain):
-    target=np.random.randn(N_SAMPLE,)
-    pred=np.random.randn(N_SAMPLE,)
-    
+    target = np.random.randn(N_SAMPLE,)
+    pred = np.random.randn(N_SAMPLE,)
+
     if constrain:
         target, pred = constrain(target, pred)
-    
+
     m = metric()
     m_val = m(torch.tensor(target, device='cuda'),
               torch.tensor(pred, device='cuda'))
 
     base_val = baseline(target, pred)
-    
-    assert abs(m_val - base_val) < TOL    
+
+    assert abs(m_val - base_val) < TOL
+
 
 @pytest.mark.skipif(not single_gpu, reason="Requires gpu")
 @pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_multi_update_gpu(metric, baseline, constrain):
     target = np.random.randn(N_SAMPLE*N_UPDATE,)
-    pred=np.random.randn(N_SAMPLE*N_UPDATE,)
-    
+    pred = np.random.randn(N_SAMPLE*N_UPDATE,)
+
     if constrain:
         target, pred = constrain(target, pred)
-    
+
     m = metric()
-    for i in range(N_UPDATE): # do 10 updates
-        m.update(torch.tensor(target[i::N_UPDATE], device='cuda'), 
-                 torch.tensor(pred[i::N_UPDATE], device='cuda'))    
+    for i in range(N_UPDATE):  # do 10 updates
+        m.update(torch.tensor(target[i::N_UPDATE], device='cuda'),
+                 torch.tensor(pred[i::N_UPDATE], device='cuda'))
     m_val = m.compute()
-    
+
     base_val = baseline(target, pred)
-    
+
     assert abs(m_val - base_val) < TOL
-    
+
+
 @pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_single_update_cpu_batch(metric, baseline, constrain):
-    target=np.random.randn(N_SAMPLE,N_DIM)
-    pred=np.random.randn(N_SAMPLE,N_DIM)
+    target = np.random.randn(N_SAMPLE, N_DIM)
+    pred = np.random.randn(N_SAMPLE, N_DIM)
 
     if constrain:
         target, pred = constrain(target, pred)
@@ -151,60 +165,64 @@ def test_single_update_cpu_batch(metric, baseline, constrain):
     m_val = m(torch.tensor(pred), torch.tensor(target))
     base_val = baseline(pred, target, multioutput='raw_values')
 
-    for v,b in zip(m_val,base_val):
+    for v, b in zip(m_val, base_val):
         assert abs(v.item() - b) < TOL
-    
+
+
 @pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_multi_update_cpu_batch(metric, baseline, constrain):
-    target = np.random.randn(N_SAMPLE*N_UPDATE,N_DIM)
-    pred=np.random.randn(N_SAMPLE*N_UPDATE,N_DIM)
+    target = np.random.randn(N_SAMPLE*N_UPDATE, N_DIM)
+    pred = np.random.randn(N_SAMPLE*N_UPDATE, N_DIM)
 
     if constrain:
         target, pred = constrain(target, pred)
 
     m = metric()
-    for i in range(N_UPDATE): # do 10 updates
-        m.update(torch.tensor(target[i::N_UPDATE]), torch.tensor(pred[i::N_UPDATE]))
+    for i in range(N_UPDATE):  # do 10 updates
+        m.update(torch.tensor(target[i::N_UPDATE]),
+                 torch.tensor(pred[i::N_UPDATE]))
     m_val = m.compute()
-    
+
     base_val = baseline(target, pred, multioutput='raw_values')
-  
-    for v, b in zip(m_val,base_val):
+
+    for v, b in zip(m_val, base_val):
         assert abs(v.item() - b) < TOL
 
-@pytest.mark.skipif(not single_gpu, reason="Requires gpu")        
+
+@pytest.mark.skipif(not single_gpu, reason="Requires gpu")
 @pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_single_update_gpu_batch(metric, baseline, constrain):
-    target=np.random.randn(N_SAMPLE,N_DIM)
-    pred=np.random.randn(N_SAMPLE,N_DIM)
+    target = np.random.randn(N_SAMPLE, N_DIM)
+    pred = np.random.randn(N_SAMPLE, N_DIM)
 
     if constrain:
         target, pred = constrain(target, pred)
 
     m = metric()
-    m_val = m(torch.tensor(pred, device='cuda'), 
+    m_val = m(torch.tensor(pred, device='cuda'),
               torch.tensor(target, device='cuda'))
     base_val = baseline(pred, target, multioutput='raw_values')
 
-    for v,b in zip(m_val,base_val):
+    for v, b in zip(m_val, base_val):
         assert abs(v.item() - b) < TOL
 
-@pytest.mark.skipif(not single_gpu, reason="Requires gpu")    
+
+@pytest.mark.skipif(not single_gpu, reason="Requires gpu")
 @pytest.mark.parametrize("metric, baseline, constrain", test_list, ids=idfn)
 def test_multi_update_gpu_batch(metric, baseline, constrain):
-    target = np.random.randn(N_SAMPLE*N_UPDATE,N_DIM)
-    pred=np.random.randn(N_SAMPLE*N_UPDATE,N_DIM)
+    target = np.random.randn(N_SAMPLE*N_UPDATE, N_DIM)
+    pred = np.random.randn(N_SAMPLE*N_UPDATE, N_DIM)
 
     if constrain:
         target, pred = constrain(target, pred)
 
     m = metric()
-    for i in range(N_UPDATE): # do 10 updates
-        m.update(torch.tensor(target[i::N_UPDATE], device='cuda'), 
+    for i in range(N_UPDATE):  # do 10 updates
+        m.update(torch.tensor(target[i::N_UPDATE], device='cuda'),
                  torch.tensor(pred[i::N_UPDATE], device='cuda'))
     m_val = m.compute()
-    
+
     base_val = baseline(target, pred, multioutput='raw_values')
-  
-    for v, b in zip(m_val,base_val):
+
+    for v, b in zip(m_val, base_val):
         assert abs(v.item() - b) < TOL
