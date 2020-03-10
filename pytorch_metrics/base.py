@@ -93,17 +93,11 @@ class ClassificationMetric(Metric):
 
         # Unsqueeze such that target.shape = [N,d] and
         # pred.shape = [N,d,C]
-        if len(ts) < 0:
-            target.unsqueeze_(0)
-
         if len(ts) < 1:
             target.unsqueeze_(0)
 
         if len(ts) < 2:
             target.unsqueeze_(1)
-
-        if len(ps) < 0:
-            pred.unsqueeze_(0)
 
         if len(ps) < 1:
             pred.unsqueeze_(0)

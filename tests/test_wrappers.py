@@ -66,7 +66,7 @@ def test_running_average(metric, baseline):
     assert abs(m_val - base_val) < TOL
 
 
-def test_metric_dict():
+def test_metric_collection():
     m1 = pm.MeanSquaredError()
     m2 = pm.MeanAbsoluteError()
     m3 = pm.ExplainedVariance()

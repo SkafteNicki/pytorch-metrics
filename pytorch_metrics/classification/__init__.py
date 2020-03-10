@@ -10,3 +10,4 @@ from .filteredaccuracy import FilteredAccuracy
 from .precision import Precision
 from .recall import Recall
 from .balancedaccuracy import BalancedAccuracy
+from .f1 import F1

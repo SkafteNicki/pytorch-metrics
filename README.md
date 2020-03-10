@@ -22,6 +22,10 @@ Availble metrics:
     - CosineSimilarity
 * Classification metrics
     - Accuracy
+    - BalancedAccuracy
+    - FilteredAccuracy
+    - Recall
+    - Precision
     - (more comming soon)
     
 The library have a number of wrappers that (as the name suggest) can be use in combination with the selection of metrics to offer extra functionality:

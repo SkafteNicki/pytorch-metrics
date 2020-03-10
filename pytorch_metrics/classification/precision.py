@@ -13,6 +13,7 @@ class Precision(ClassificationMetric):
     def reset(self):
         self._tp = 0.0
         self._fp = 0.0
+        super().reset()
 
     def update(self, target, pred):
         self.check_input(target, pred)

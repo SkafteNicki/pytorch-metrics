@@ -4,22 +4,32 @@ Created on Sat Mar  7 09:39:02 2020
 
 @author: nsde
 """
-
-from pytorch_metrics.utils import check_non_zero_sample_size
-from .recall import Recall
-from .precision import Precision
+import torch.nn.functional as F
+from pytorch_metrics import ClassificationMetric
 
 
-class F1(Recall, Precision):
+class F1(ClassificationMetric):
     def reset(self):
-        super(Recall, self).reset()
-        super(Precision, self).reset()
+        self._tp = 0.0
+        self._fp = 0.0
+        self._fn = 0.0
+        super().reset()
 
     def update(self, target, pred):
-        super(Recall, self).update(target, pred)
-        super(Precision, self).update(target, pred)
+        self.check_input(target, pred)
+        self.check_type(target, pred)
+        target, pred = self.transform(target, pred)
+
+        target = F.one_hot(target.long(), num_classes=self._num_classes)
+        pred = F.one_hot(pred.long(), num_classes=self._num_classes)
+
+        self._tp += (target * pred).sum(dim=-1).sum(dim=0)
+        self._fn += (target * (1 - pred)).sum(dim=-1).sum(dim=0)
+        self._fp += ((1 - target) * pred).sum(dim=-1).sum(dim=0)
 
     def compute(self):
-        recall = super(Recall, self).compute()
-        precision = super(Precision, self).compute()
-        return precision * recall * 2 / (precision + recall)
+        val = (2 * self._tp) / (2 * self._tp + self._fn + self._fp)
+        try:
+            return val.item()
+        except:
+            return val
