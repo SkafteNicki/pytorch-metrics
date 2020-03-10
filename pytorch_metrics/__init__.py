@@ -13,7 +13,7 @@ __docs__ = (
     "many commonly used metrics within deep learning"
 )
 
-from .base import Metric
+from .base import (Metric, RegressionMetric, ClassificationMetric)
 
 from .wrappers import (
     MetricCollection, 
@@ -37,7 +37,12 @@ from .regression import (
     CosineSimilarity,
 )
 
-from .classification import Accuracy
+from .classification import (
+    Accuracy,
+    FilteredAccuracy,
+    Precision,
+    Recall
+)
 
 __all__ = [
     "Metric",
@@ -52,4 +57,7 @@ __all__ = [
     "MeanPoissonDeviance",
     "MeanGammaDeviance",
     "Accuracy",
+    "FilteredAccuracy",
+    "Precision",
+    "Recall"
 ]

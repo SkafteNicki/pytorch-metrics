@@ -9,3 +9,4 @@ from pytorch_metrics import Metric
 
 class BalancedAccuracy(Metric):
     pass
+    # TODO: easy to calculate from confusion matrix

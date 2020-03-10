@@ -6,11 +6,11 @@ Created on Fri Mar  6 08:10:16 2020
 """
 
 import torch
-from pytorch_metrics import Metric
+from pytorch_metrics import RegressionMetric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
 
-class MeanSquaredError(Metric):
+class MeanSquaredError(RegressionMetric):
     name = "meansquarederror"
     memory_efficient = True
 
@@ -19,7 +19,7 @@ class MeanSquaredError(Metric):
         self._n = 0
 
     def update(self, target, pred):
-        target, pred = self.tobatch(target, pred)
+        self.check_input(target, pred)
         target, pred = self.transform(target, pred)
         self._squared_error += torch.pow(pred - target, 2).sum(dim=0)
         self._n += target.shape[0]

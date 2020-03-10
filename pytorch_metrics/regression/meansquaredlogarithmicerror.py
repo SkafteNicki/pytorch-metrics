@@ -6,11 +6,11 @@ Created on Sun Mar  8 14:10:36 2020
 """
 
 import torch
-from pytorch_metrics import Metric
+from pytorch_metrics import RegressionMetric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
 
-class MeanSquaredLogarithmicError(Metric):
+class MeanSquaredLogarithmicError(RegressionMetric):
     name = 'meansquaredlogarithmicerror'
     memory_efficient = True
 
@@ -19,8 +19,7 @@ class MeanSquaredLogarithmicError(Metric):
         self._n = 0
 
     def update(self, target, pred):
-        assert torch.all(target >= 0), 'All targets needs to be positive'
-        target, pred = self.tobatch(target, pred)
+        self.check_input(target, pred)
         target, pred = self.transform(target, pred)
         self._logarithmic_error += torch.pow(
             (target+1).log() - (pred+1).log(), 2.0).sum(dim=0)
@@ -33,3 +32,8 @@ class MeanSquaredLogarithmicError(Metric):
             return val.item()
         except:
             return val
+    
+    def check_input(self, target, pred):
+        assert torch.all(target >= 0), 'All targets needs to be positive'
+        assert torch.all(pred >= 0), 'All predictions needs to be positive'
+        super().check_input(target, pred)

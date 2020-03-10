@@ -6,11 +6,11 @@ Created on Fri Mar  6 17:34:12 2020
 """
 
 import torch
-from pytorch_metrics import Metric
+from pytorch_metrics import RegressionMetric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
 
-class ExplainedVariance(Metric):
+class ExplainedVariance(RegressionMetric):
     name = "explainedvariance"
     memory_efficient = False
 
@@ -19,7 +19,7 @@ class ExplainedVariance(Metric):
         self._pred = []
 
     def update(self, target, pred):
-        target, pred = self.tobatch(target, pred)
+        self.check_input(target, pred)
         target, pred = self.transform(target, pred)
         self._target.append(target)
         self._pred.append(pred)

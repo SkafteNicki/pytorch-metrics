@@ -6,11 +6,11 @@ Created on Fri Mar  6 17:42:38 2020
 """
 
 import torch
-from pytorch_metrics import Metric
+from pytorch_metrics import RegressionMetric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
 
-class CosineSimilarity(Metric):
+class CosineSimilarity(RegressionMetric):
     name = "cosinesimilarity"
     memory_efficient = True
 
@@ -21,6 +21,7 @@ class CosineSimilarity(Metric):
         self._n = 0
 
     def update(self, target, pred):
+        self.check_input(target, pred)
         target, pred = self.transform(target, pred)
         self._dot_xy += (target * pred).sum(dim=0)
         self._norm_x += torch.pow(target, 2.0).sum(dim=0)

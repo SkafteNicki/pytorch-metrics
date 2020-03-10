@@ -6,7 +6,7 @@ Created on Sun Mar  8 16:34:10 2020
 """
 
 import torch
-from pytorch_metrics import Metric
+from pytorch_metrics import RegressionMetric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
 
@@ -16,7 +16,7 @@ def xlogy(x, y):
     return z
 
 
-class MeanTweedieDeviance(Metric):
+class MeanTweedieDeviance(RegressionMetric):
     name = "meantweediedeviance"
     memory_efficient = True
 
@@ -29,6 +29,8 @@ class MeanTweedieDeviance(Metric):
         self._n = 0
 
     def update(self, target, pred):
+        self.check_input(target, pred)
+        target, pred = self.transform(target, pred)
         message = "Mean Tweedie deviance error with power={} can only be used on ".format(
             self.power
         )
