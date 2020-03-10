@@ -9,12 +9,9 @@ from pytorch_metrics import Metric
 from pytorch_metrics.utils import check_non_zero_sample_size
 
 class TopkAccuracy(Metric):
-    def __init__(self,
-                 k=5,
-                 transform=lambda x,y: (x,y),
-                 device=None):
+    def __init__(self, transform=None, k=5):
         self._k = k
-        super().__init__(transform, device)
+        super().__init__(transform)
     
     def reset(self):
         self._tp = 0

@@ -12,6 +12,5 @@ class MeanGammaDeviance(MeanTweedieDeviance):
     name = 'meangammadeviance'
     memory_efficient = True
 
-    def __init__(self,
-                 transform=lambda x, y: (x, y)):
+    def __init__(self, transform=None):
         super().__init__(transform, power=2)

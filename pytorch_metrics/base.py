@@ -6,8 +6,9 @@ Created on Fri Mar  6 08:41:22 2020
 """
 
 from abc import ABC, abstractmethod
-from .transforms import argmax_transform, round_transform
-
+from .transforms import (DefaultTransform, 
+                         ArgmaxTransform, 
+                         RoundTransform)
 
 class Metric(ABC):
     """
@@ -17,8 +18,11 @@ class Metric(ABC):
     name = "metric"
     memory_efficient = True
 
-    def __init__(self, transform=lambda x, y: (x, y)):
-        self.transform = transform
+    def __init__(self, transform=None):
+        if transform is None:
+            self.transform = DefaultTransform()
+        else:
+            self.transform = transform
 
         # Initialize metric variables
         self.reset()
@@ -70,7 +74,7 @@ class ClassificationMetric(Metric):
     name = "classificationmetric"
     memory_efficient = True
 
-    def __init__(self, transform=lambda x, y: (x, y), is_multilabel=False):
+    def __init__(self, transform=None, is_multilabel=False):
         super().__init__(transform)
         self._is_multilabel = is_multilabel
         self._type = None
@@ -114,15 +118,18 @@ class ClassificationMetric(Metric):
     def check_type(self, target, pred):
         if pred.shape[-1] == 1:
             _type = "binary"
-            self.transform = round_transform(dim=-1)
+            if isinstance(self.transform, DefaultTransform):
+                self.transform = RoundTransform()
             _num_classes = 2
         elif pred.shape[-1] == 2:
             _type = "binary"
-            self.transform = argmax_transform(dim=-1)
+            if isinstance(self.transform, DefaultTransform):
+                self.transform = ArgmaxTransform()
             _num_classes = 2
         else:
             _type = "multiclass"
-            self.transform = argmax_transform(dim=-1)
+            if isinstance(self.transform, DefaultTransform):
+                self.transform = ArgmaxTransform()
             _num_classes = pred.shape[-1]
 
         if self._type is None:

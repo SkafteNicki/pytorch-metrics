@@ -9,10 +9,7 @@ import torch
 from .accuracy import Accuracy
 
 class FilteredAccuracy(Accuracy):
-    def __init__(self,
-                 transform=lambda x, y: (x, y),
-                 is_multilabel=False,
-                 labels_to_ignore=[]):
+    def __init__(self, transform=None, is_multilabel=False, labels_to_ignore=[]):
         self.labels_to_ignore = labels_to_ignore
         super().__init__(transform, is_multilabel)
         

@@ -20,7 +20,7 @@ class MeanTweedieDeviance(RegressionMetric):
     name = "meantweediedeviance"
     memory_efficient = True
 
-    def __init__(self, transform=lambda x, y: (x, y), power=0):
+    def __init__(self, transform=None, power=0):
         super().__init__(transform)
         self.power = power
 
