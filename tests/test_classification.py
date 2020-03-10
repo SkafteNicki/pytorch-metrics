@@ -14,7 +14,7 @@ from sklearn.metrics import (
     accuracy_score,
     recall_score as _recall_score,
     precision_score as _precision_score,
-    balanced_accuracy_score
+    balanced_accuracy_score,
 )
 from scipy.special import softmax
 import pytest
@@ -26,6 +26,7 @@ N_SAMPLE = 100
 N_UPDATE = 5
 N_DIM = 10
 N_CLASSES = 10
+
 
 def precision_score(y_true, y_pred):
     return _precision_score(y_true, y_pred, average="micro")
@@ -42,12 +43,13 @@ def filtered_accuracy(y_true, y_pred, ignore_label=[3, 7]):
 
     return accuracy_score(y_true, y_pred)
 
+
 test_list = [
     (pm.Accuracy, accuracy_score),
     (pm.Precision, precision_score),
     (pm.Recall, recall_score),
     (partial(pm.FilteredAccuracy, labels_to_ignore=[3, 7]), filtered_accuracy),
-    (pm.BalancedAccuracy, balanced_accuracy_score)
+    (pm.BalancedAccuracy, balanced_accuracy_score),
 ]
 
 

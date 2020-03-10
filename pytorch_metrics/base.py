@@ -6,9 +6,8 @@ Created on Fri Mar  6 08:41:22 2020
 """
 
 from abc import ABC, abstractmethod
-from .transforms import (DefaultTransform, 
-                         ArgmaxTransform, 
-                         RoundTransform)
+from .transforms import DefaultTransform, ArgmaxTransform, RoundTransform
+
 
 class Metric(ABC):
     """

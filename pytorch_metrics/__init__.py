@@ -13,15 +13,9 @@ __docs__ = (
     "many commonly used metrics within deep learning"
 )
 
-from .base import (Metric, RegressionMetric, ClassificationMetric)
+from .base import Metric, RegressionMetric, ClassificationMetric
 
-from .wrappers import (
-    MetricCollection, 
-    RunningAverage,
-    Mean,
-    Sum,
-    Product
-)
+from .wrappers import MetricCollection, RunningAverage, Mean, Sum, Product
 
 from .regression import (
     MeanSquaredError,
@@ -42,7 +36,7 @@ from .classification import (
     FilteredAccuracy,
     Precision,
     Recall,
-    BalancedAccuracy
+    BalancedAccuracy,
 )
 
 __all__ = [
@@ -61,5 +55,5 @@ __all__ = [
     "FilteredAccuracy",
     "Precision",
     "Recall",
-    "BalancedAccuracy"
+    "BalancedAccuracy",
 ]
