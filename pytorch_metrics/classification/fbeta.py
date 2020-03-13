@@ -7,8 +7,11 @@ Created on Sat Mar  7 09:39:02 2020
 import torch.nn.functional as F
 from pytorch_metrics import ClassificationMetric
 
-
-class F1(ClassificationMetric):
+class FBeta(ClassificationMetric):
+    def __init__(self, beta, transform=None, is_multilabel=False):
+        super().__init__(transform, is_multilabel)
+        self.beta = beta
+        
     def reset(self):
         self._tp = 0.0
         self._fp = 0.0
@@ -28,8 +31,14 @@ class F1(ClassificationMetric):
         self._fp += ((1 - target) * pred).sum(dim=-1).sum(dim=0)
 
     def compute(self):
-        val = (2 * self._tp) / (2 * self._tp + self._fn + self._fp)
+        betasq1 = (1+self.beta**2)
+        val = (betasq1 * self._tp) / (betasq1 * self._tp + self.beta**2 * self._fn + self._fp)
         try:
             return val.item()
         except:
             return val
+
+class F1(FBeta):
+    def __init__(self, transform=None, is_multilabel=False):
+        super().__init__(1.0, transform, is_multilabel)
+
