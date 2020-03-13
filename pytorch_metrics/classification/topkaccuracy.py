@@ -11,7 +11,7 @@ from .accuracy import Accuracy
 class TopKAccuracy(Accuracy):
     def __init__(self, transform=None, k=5):
         self._k = k
-        assert self._k > 1, 'k needs to be larger than 1'
+        assert self._k > 1, "k needs to be larger than 1"
         super().__init__(transform)
 
     def update(self, target, pred):
@@ -19,23 +19,23 @@ class TopKAccuracy(Accuracy):
         self.check_type(target, pred)
         target, pred = self.transform(target, pred)
 
-
         sorted_idx = torch.topk(pred, self._k, dim=-1)[1]
         # TODO: why does this not work
-        
+
         correct = torch.eq(target.unsqueeze(-1), sorted_idx).sum(dim=-1)
-        
+
         self._num_correct += correct.sum(dim=0)
         self._n += target.shape[0]
-    
+
     def check_type(self, target, pred):
         # do not change the default transform
         if pred.shape[-1] < self._k:
-            raise RuntimeError('Number of classes needs to be larger than k'
-                               'in TopKAccuracy')
+            raise RuntimeError(
+                "Number of classes needs to be larger than k" "in TopKAccuracy"
+            )
         _type = "multiclass"
         _num_classes = pred.shape[-1]
-    
+
         if self._type is None:
             self._type = _type
             self._num_classes = _num_classes

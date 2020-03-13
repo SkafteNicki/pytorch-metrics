@@ -18,7 +18,7 @@ from sklearn.metrics import (
     f1_score as _f1_score,
     roc_curve,
     roc_auc_score,
-    confusion_matrix
+    confusion_matrix,
 )
 from scipy.special import softmax
 import pytest
@@ -51,9 +51,10 @@ def filtered_accuracy(y_true, y_pred, ignore_label=[3, 7]):
 
     return accuracy_score(y_true, y_pred)
 
+
 def topk_accuracy(y_true, y_pred, k=5):
-    y_pred_sorted = np.argsort(y_pred, axis=-1)[...,::-1][...,:k]
-    eq = y_true[...,np.newaxis] == y_pred_sorted
+    y_pred_sorted = np.argsort(y_pred, axis=-1)[..., ::-1][..., :k]
+    eq = y_true[..., np.newaxis] == y_pred_sorted
     return eq.sum(axis=-1).mean()
 
 
@@ -64,7 +65,7 @@ test_list = [
     (partial(pm.FilteredAccuracy, labels_to_ignore=[3, 7]), filtered_accuracy, True),
     (pm.BalancedAccuracy, balanced_accuracy_score, True),
     (pm.F1, f1_score, True),
-    (pm.TopKAccuracy, topk_accuracy, False)
+    (pm.TopKAccuracy, topk_accuracy, False),
 ]
 
 
@@ -106,7 +107,7 @@ def test_single_update_gpu(metric, baseline, do_argmax):
 
     m = metric()
     m_val = m(torch.tensor(target, device="cuda"), torch.tensor(pred, device="cuda"))
-    base_val = baseline(target,pred.argmax(axis=-1) if do_argmax else pred)
+    base_val = baseline(target, pred.argmax(axis=-1) if do_argmax else pred)
 
     assert abs(m_val - base_val) < TOL
 
@@ -129,42 +130,40 @@ def test_multi_update_gpu(metric, baseline, do_argmax):
     assert abs(m_val - base_val) < TOL
 
 
-@pytest.mark.parametrize("device", ['cpu', 'cuda'], ids=idfn)
+@pytest.mark.parametrize("device", ["cpu", "cuda"], ids=idfn)
 def test_roc_and_auc_cpu(device):
     target = np.random.randint(0, 2, N_SAMPLE)
     pred = softmax(np.random.randn(N_SAMPLE, 2), axis=1)
-    
-    baseline_fpr, baseline_tpr, threshold = roc_curve(target, pred[:,1:])
+
+    baseline_fpr, baseline_tpr, threshold = roc_curve(target, pred[:, 1:])
     m = pm.ROC(line=torch.tensor(threshold))
-    fpr, tpr = m(torch.tensor(target, device=device), 
-                 torch.tensor(pred, device=device))
-    #import pdb
-    #pdb.set_trace()
-    #print(baseline_fpr)
-    #print(fpr)
+    fpr, tpr = m(torch.tensor(target, device=device), torch.tensor(pred, device=device))
+    # import pdb
+    # pdb.set_trace()
+    # print(baseline_fpr)
+    # print(fpr)
     # for v1, v2 in zip(baseline_fpr[:-1], fpr[1:]):
     #     assert abs(v1 - v2.item()) < TOL
-        
+
     # for v1, v2 in zip(baseline_tpr[:-1], tpr[1:]):
     #     assert abs(v1 - v2.item()) < TOL
-        
-    baseline_auc = roc_auc_score(target, pred[:,1:])
+
+    baseline_auc = roc_auc_score(target, pred[:, 1:])
     m = pm.AUC()
     auc = m(torch.tensor(target), torch.tensor(pred))
-    
+
     assert abs(baseline_auc - auc) < TOL
 
 
-@pytest.mark.parametrize("device", ['cpu', 'cuda'], ids=idfn)
+@pytest.mark.parametrize("device", ["cpu", "cuda"], ids=idfn)
 def test_confusionmatrix(device):
     target = np.random.randint(0, N_CLASSES, N_SAMPLE)
     pred = softmax(np.random.randn(N_SAMPLE, N_CLASSES), axis=1)
-    
+
     m = pm.ConfusionMatrix()
-    confmat = m(torch.tensor(target, device=device), 
-                torch.tensor(pred, device=device))
-    
+    confmat = m(torch.tensor(target, device=device), torch.tensor(pred, device=device))
+
     baseline_mat = confusion_matrix(target, pred.argmax(axis=-1))
-    
+
     for v1, v2 in zip(confmat.flatten(), baseline_mat.flatten()):
         assert abs(v1.item() - v2) < TOL
