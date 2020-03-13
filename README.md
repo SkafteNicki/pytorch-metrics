@@ -26,6 +26,11 @@ Availble metrics:
     - FilteredAccuracy
     - Recall
     - Precision
+    - BalancedAccuracy
+    - F1
+    - TopKAccuracy
+    - ROC
+    - AUC
     - (more comming soon)
     
 The library have a number of wrappers that (as the name suggest) can be use in combination with the selection of metrics to offer extra functionality:

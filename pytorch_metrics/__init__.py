@@ -37,7 +37,10 @@ from .classification import (
     Precision,
     Recall,
     BalancedAccuracy,
-    F1
+    F1,
+    TopKAccuracy,
+    ROC,
+    AUC
 )
 
 __all__ = [
@@ -58,4 +61,7 @@ __all__ = [
     "Recall",
     "BalancedAccuracy",
     "F1",
+    "TopKAccuracy",
+    "ROC",
+    "AUC"
 ]

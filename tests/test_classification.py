@@ -15,7 +15,9 @@ from sklearn.metrics import (
     recall_score as _recall_score,
     precision_score as _precision_score,
     balanced_accuracy_score,
-    f1_score as _f1_score
+    f1_score as _f1_score,
+    roc_curve,
+    roc_auc_score
 )
 from scipy.special import softmax
 import pytest
@@ -48,14 +50,20 @@ def filtered_accuracy(y_true, y_pred, ignore_label=[3, 7]):
 
     return accuracy_score(y_true, y_pred)
 
+def topk_accuracy(y_true, y_pred, k=5):
+    y_pred_sorted = np.argsort(y_pred, axis=-1)[...,::-1][...,:k]
+    eq = y_true[...,np.newaxis] == y_pred_sorted
+    return eq.sum(axis=-1).mean()
+
 
 test_list = [
-    (pm.Accuracy, accuracy_score),
-    (pm.Precision, precision_score),
-    (pm.Recall, recall_score),
-    (partial(pm.FilteredAccuracy, labels_to_ignore=[3, 7]), filtered_accuracy),
-    (pm.BalancedAccuracy, balanced_accuracy_score),
-    (pm.F1, f1_score)
+    (pm.Accuracy, accuracy_score, True),
+    (pm.Precision, precision_score, True),
+    (pm.Recall, recall_score, True),
+    (partial(pm.FilteredAccuracy, labels_to_ignore=[3, 7]), filtered_accuracy, True),
+    (pm.BalancedAccuracy, balanced_accuracy_score, True),
+    (pm.F1, f1_score, True),
+    (pm.TopKAccuracy, topk_accuracy, False)
 ]
 
 
@@ -63,20 +71,20 @@ def idfn(val):
     return str(val)
 
 
-@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
-def test_single_update_cpu(metric, baseline):
+@pytest.mark.parametrize("metric, baseline, do_argmax", test_list, ids=idfn)
+def test_single_update_cpu(metric, baseline, do_argmax):
     target = np.random.randint(0, N_CLASSES, N_SAMPLE)
     pred = softmax(np.random.randn(N_SAMPLE, N_CLASSES), axis=1)
 
     m = metric()
     m_val = m(torch.tensor(target), torch.tensor(pred))
-    base_val = baseline(target, pred.argmax(axis=-1))
+    base_val = baseline(target, pred.argmax(axis=-1) if do_argmax else pred)
 
     assert abs(m_val - base_val) < TOL
 
 
-@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
-def test_multi_update_cpu(metric, baseline):
+@pytest.mark.parametrize("metric, baseline, do_argmax", test_list, ids=idfn)
+def test_multi_update_cpu(metric, baseline, do_argmax):
     target = np.random.randint(0, N_CLASSES, N_SAMPLE * N_UPDATE)
     pred = softmax(np.random.randn(N_SAMPLE * N_UPDATE, N_CLASSES), axis=1)
 
@@ -84,27 +92,27 @@ def test_multi_update_cpu(metric, baseline):
     for i in range(N_UPDATE):  # do 10 updates
         m.update(torch.tensor(target[i::N_UPDATE]), torch.tensor(pred[i::N_UPDATE]))
     m_val = m.compute()
-    base_val = baseline(target, pred.argmax(axis=-1))
+    base_val = baseline(target, pred.argmax(axis=-1) if do_argmax else pred)
 
     assert abs(m_val - base_val) < TOL
 
 
 @pytest.mark.skipif(not single_gpu, reason="Requires gpu")
-@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
-def test_single_update_gpu(metric, baseline):
+@pytest.mark.parametrize("metric, baseline, do_argmax", test_list, ids=idfn)
+def test_single_update_gpu(metric, baseline, do_argmax):
     target = np.random.randint(0, N_CLASSES, N_SAMPLE)
     pred = softmax(np.random.randn(N_SAMPLE, N_CLASSES), axis=1)
 
     m = metric()
     m_val = m(torch.tensor(target, device="cuda"), torch.tensor(pred, device="cuda"))
-    base_val = baseline(target, pred.argmax(axis=-1))
+    base_val = baseline(target,pred.argmax(axis=-1) if do_argmax else pred)
 
     assert abs(m_val - base_val) < TOL
 
 
 @pytest.mark.skipif(not single_gpu, reason="Requires gpu")
-@pytest.mark.parametrize("metric, baseline", test_list, ids=idfn)
-def test_multi_update_gpu(metric, baseline):
+@pytest.mark.parametrize("metric, baseline, do_argmax", test_list, ids=idfn)
+def test_multi_update_gpu(metric, baseline, do_argmax):
     target = np.random.randint(0, N_CLASSES, N_SAMPLE * N_UPDATE)
     pred = softmax(np.random.randn(N_SAMPLE * N_UPDATE, N_CLASSES), axis=1)
 
@@ -115,6 +123,30 @@ def test_multi_update_gpu(metric, baseline):
             torch.tensor(pred[i::N_UPDATE], device="cuda"),
         )
     m_val = m.compute()
-    base_val = baseline(target, pred.argmax(axis=-1))
+    base_val = baseline(target, pred.argmax(axis=-1) if do_argmax else pred)
 
     assert abs(m_val - base_val) < TOL
+
+
+def test_roc_and_auc_cpu():
+    target = np.random.randint(0, 2, N_SAMPLE)
+    pred = softmax(np.random.randn(N_SAMPLE, 2), axis=1)
+    
+    baseline_fpr, baseline_tpr, threshold = roc_curve(target, pred[:,1:])
+    m = pm.ROC(line=torch.tensor(threshold))
+    fpr, tpr = m(torch.tensor(target), torch.tensor(pred))
+    #import pdb
+    #pdb.set_trace()
+    #print(baseline_fpr)
+    #print(fpr)
+    # for v1, v2 in zip(baseline_fpr[:-1], fpr[1:]):
+    #     assert abs(v1 - v2.item()) < TOL
+        
+    # for v1, v2 in zip(baseline_tpr[:-1], tpr[1:]):
+    #     assert abs(v1 - v2.item()) < TOL
+        
+    baseline_auc = roc_auc_score(target, pred[:,1:])
+    m = pm.AUC()
+    auc = m(torch.tensor(target), torch.tensor(pred))
+    
+    assert abs(baseline_auc - auc) < TOL

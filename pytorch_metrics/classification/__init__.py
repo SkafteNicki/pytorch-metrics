@@ -11,3 +11,5 @@ from .precision import Precision
 from .recall import Recall
 from .balancedaccuracy import BalancedAccuracy
 from .f1 import F1
+from .topkaccuracy import TopKAccuracy
+from .roc import ROC, AUC

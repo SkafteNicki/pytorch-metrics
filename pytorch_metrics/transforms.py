@@ -49,3 +49,14 @@ class RoundTransform(Transform):
 
     def forward(self, target, pred):
         return target, pred.round(dim=self.dim)
+
+class ROCTransform(Transform):
+    def __init__(self, line):
+        self.line = line
+        
+    def forward(self, target, pred):
+        if pred.shape[-1] == 2:
+            pred = pred[:,:,1:] # reduce to single dimension
+
+        pred = (pred>self.line.type_as(pred)).long()
+        return target, pred

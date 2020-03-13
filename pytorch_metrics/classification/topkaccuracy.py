@@ -5,25 +5,49 @@ Created on Fri Mar  6 11:37:46 2020
 @author: nsde
 """
 import torch
-from pytorch_metrics import Metric
-from pytorch_metrics.utils import check_non_zero_sample_size
+from .accuracy import Accuracy
 
 
-class TopkAccuracy(Metric):
+class TopKAccuracy(Accuracy):
     def __init__(self, transform=None, k=5):
         self._k = k
+        assert self._k > 1, 'k needs to be larger than 1'
         super().__init__(transform)
 
-    def reset(self):
-        self._tp = 0
-        self._n = 0
-
     def update(self, target, pred):
-        sorted_indices = torch.topk(pred, self._k, dim=1)[1]
-        expanded_y = target.view(-1, 1).expand(-1, self._k)
-        correct = torch.sum(torch.eq(sorted_indices, expanded_y), dim=1)
-        self._tp += torch.sum(correct).item()
-        self._n += correct.shape[0]
+        self.check_input(target, pred)
+        self.check_type(target, pred)
+        target, pred = self.transform(target, pred)
 
-    def compute(self):
-        pass
+
+        sorted_idx = torch.topk(pred, self._k, dim=-1)[1]
+        # TODO: why does this not work
+        
+        correct = torch.eq(target.unsqueeze(-1), sorted_idx).sum(dim=-1)
+        
+        self._num_correct += correct.sum(dim=0)
+        self._n += target.shape[0]
+    
+    def check_type(self, target, pred):
+        # do not change the default transform
+        if pred.shape[-1] < self._k:
+            raise RuntimeError('Number of classes needs to be larger than k'
+                               'in TopKAccuracy')
+        _type = "multiclass"
+        _num_classes = pred.shape[-1]
+    
+        if self._type is None:
+            self._type = _type
+            self._num_classes = _num_classes
+        else:
+            if self._type != _type:
+                raise RuntimeError(
+                    "Input data type has changed from {0} to {1}".format(
+                        self._type, _type
+                    )
+                )
+            if self._num_classes != _num_classes:
+                raise RuntimeError(
+                    "Input data has changed number of classes "
+                    "from {0} to {1}".format(self._num_classes, _num_classes)
+                )
