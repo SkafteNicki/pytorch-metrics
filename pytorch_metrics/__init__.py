@@ -29,6 +29,7 @@ from .regression import (
     MeanPoissonDeviance,
     MeanGammaDeviance,
     CosineSimilarity,
+    Correlation
 )
 
 from .classification import (
@@ -47,15 +48,19 @@ from .classification import (
 __all__ = [
     "Metric",
     "MetricDict",
-    "RunningAverage" "MeanSquaredError",
+    "RunningAverage",
+    "MeanSquaredError",
     "MeanAbsoluteError",
     "RootMeanSquaredError",
     "ExplainedVariance",
     "R2Score",
     "MaxError",
-    "MeanSquaredLogarithmicError" "MeanTweedieDeviance",
+    "MeanSquaredLogarithmicError",
+    "MeanTweedieDeviance",
     "MeanPoissonDeviance",
     "MeanGammaDeviance",
+    "CosineSimilary",
+    "Correlation",
     "Accuracy",
     "FilteredAccuracy",
     "Precision",
