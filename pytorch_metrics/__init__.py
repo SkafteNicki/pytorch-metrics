@@ -40,7 +40,8 @@ from .classification import (
     F1,
     TopKAccuracy,
     ROC,
-    AUC
+    AUC,
+    ConfusionMatrix,
 )
 
 __all__ = [
@@ -63,5 +64,6 @@ __all__ = [
     "F1",
     "TopKAccuracy",
     "ROC",
-    "AUC"
+    "AUC",
+    "ConfusionMatrix"
 ]
