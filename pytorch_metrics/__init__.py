@@ -29,7 +29,8 @@ from .regression import (
     MeanPoissonDeviance,
     MeanGammaDeviance,
     CosineSimilarity,
-    Correlation
+    PearsonCorrelation,
+    SpearmanCorrelation,
 )
 
 from .classification import (
@@ -60,7 +61,8 @@ __all__ = [
     "MeanPoissonDeviance",
     "MeanGammaDeviance",
     "CosineSimilary",
-    "Correlation",
+    "PearsonCorrelation",
+    "SpearmanCorrelation",
     "Accuracy",
     "FilteredAccuracy",
     "Precision",

@@ -19,7 +19,7 @@ from sklearn.metrics import (
     mean_poisson_deviance as _mean_poisson_deviance,
 )
 from scipy.spatial.distance import cosine
-from scipy.stats import pearsonr as _pearsonr
+from scipy.stats import (pearsonr as _pearsonr, spearmanr as _spearmanr)
 
 import pytest
 from testing_utils import can_run_gpu_test, move_to_positive
@@ -76,6 +76,12 @@ def pearsonr(y_true, y_pred, multioutput="uniform_average"):
         return _pearsonr(y_true, y_pred)[0]
     else:
         return np.array([_pearsonr(yt, yp)[0] for yt, yp in zip(y_true.T, y_pred.T)])
+    
+def spearmanr(y_true, y_pred, multioutput="uniform_average"):
+    if multioutput == "uniform_average":
+        return _spearmanr(y_true, y_pred)[0]
+    else:
+        return np.array([_spearmanr(yt, yp)[0] for yt, yp in zip(y_true.T, y_pred.T)])
 
 
 test_list = [
@@ -89,7 +95,8 @@ test_list = [
     (pm.MeanGammaDeviance, mean_gamma_deviance, move_to_positive),
     (pm.MeanPoissonDeviance, mean_poisson_deviance, move_to_positive),
     (pm.CosineSimilarity, cosine_similarity, None),
-    (pm.Correlation, pearsonr, None)
+    (pm.PearsonCorrelation, pearsonr, None),
+    (pm.SpearmanCorrelation, spearmanr, None)
 ]
 
 

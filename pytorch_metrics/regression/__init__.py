@@ -16,4 +16,5 @@ from .meantweediedeviance import MeanTweedieDeviance
 from .meanpoissondeviance import MeanPoissonDeviance
 from .meangammadeviance import MeanGammaDeviance
 from .cosinesimilarity import CosineSimilarity
-from .correlation import Correlation
+from .pearsoncorrelation import PearsonCorrelation
+from .spearmancorrelation import SpearmanCorrelation
