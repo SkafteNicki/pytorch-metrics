@@ -9,6 +9,9 @@ from .recall import Recall
 
 
 class BalancedAccuracy(Recall):
+    name = 'balancedaccuracy'
+    memory_efficient = True
+    
     def update(self, target, pred):
         self.check_input(target, pred)
         self.check_type(target, pred)

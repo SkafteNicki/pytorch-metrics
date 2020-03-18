@@ -10,6 +10,9 @@ from .accuracy import Accuracy
 
 
 class FilteredAccuracy(Accuracy):
+    name = 'filteredaccuracy'
+    memory_efficient = True
+    
     def __init__(self, transform=None, is_multilabel=False, labels_to_ignore=[]):
         self.labels_to_ignore = labels_to_ignore
         super().__init__(transform, is_multilabel)

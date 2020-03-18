@@ -11,6 +11,9 @@ from pytorch_metrics.utils import check_non_zero_sample_size
 
 
 class Accuracy(ClassificationMetric):
+    name = 'accuracy'
+    memory_efficient = True
+    
     def reset(self):
         self._num_correct = 0.0
         self._n = 0
