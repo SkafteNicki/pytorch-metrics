@@ -9,6 +9,9 @@ from .accuracy import Accuracy
 
 
 class TopKAccuracy(Accuracy):
+    name = 'topkaccuracy'
+    memory_efficient = True
+    
     def __init__(self, transform=None, k=5):
         self._k = k
         assert self._k > 1, "k needs to be larger than 1"

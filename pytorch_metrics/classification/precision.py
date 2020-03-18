@@ -10,6 +10,9 @@ from pytorch_metrics import ClassificationMetric
 
 
 class Precision(ClassificationMetric):
+    name = 'precision'
+    memory_efficient = True
+    
     def reset(self):
         self._tp = 0.0
         self._fp = 0.0

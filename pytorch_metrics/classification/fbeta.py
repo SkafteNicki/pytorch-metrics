@@ -9,6 +9,9 @@ from pytorch_metrics import ClassificationMetric
 
 
 class FBeta(ClassificationMetric):
+    name = 'fbeta'
+    memory_efficient = True
+    
     def __init__(self, beta, transform=None, is_multilabel=False):
         super().__init__(transform, is_multilabel)
         self.beta = beta
@@ -43,5 +46,8 @@ class FBeta(ClassificationMetric):
 
 
 class F1(FBeta):
+    name = 'f1'
+    memory_efficient = True
+    
     def __init__(self, transform=None, is_multilabel=False):
         super().__init__(1.0, transform, is_multilabel)

@@ -10,6 +10,9 @@ from pytorch_metrics.utils import check_non_zero_sample_size
 
 
 class ConfusionMatrix(ClassificationMetric):
+    name = 'confusionmatrix'
+    memory_efficient = False
+    
     def __init__(self, transform=None, is_multilabel=False, normalize=False):
         super().__init__(transform, is_multilabel)
         self.normalize = normalize
@@ -24,10 +27,12 @@ class ConfusionMatrix(ClassificationMetric):
         self.check_type(target, pred)
         target, pred = self.transform(target, pred)
 
-        bins = torch.bincount(
-            target * self._num_classes + pred, minlength=self._num_classes ** 2
-        )
-        bins = bins.reshape(self._num_classes, self._num_classes)
+        d = target.shape[-1]
+        batch_vec = torch.arange(target.shape[-1])
+        unique_labels = batch_vec * num_classes**2 + target * num_classes + pred
+
+        bins = torch.bincount(unique_labels, minlength=d*self._num_classes ** 2)
+        bins = bins.reshape(d, self._num_classes, self._num_classes).squeeze()
         if self.confmat is None:
             self.confmat = bins
         else:
@@ -41,23 +46,3 @@ class ConfusionMatrix(ClassificationMetric):
             return self.confmat / self._n
         else:
             return self.confmat
-
-    def check_input(self, target, pred):
-        ts = target.shape
-        ps = pred.shape
-
-        assert (
-            target.squeeze().shape == pred.squeeze().shape[:-1]
-        ), "Target can only differ in the last dimension"
-
-        # For confmat we cannot support multiple outputs
-        # (due to torch.bincount only working with 1D tensors), so only expand
-        # target to [N,] and preds to [N,C]
-        if len(ts) < 1:
-            target.unsqueeze_(0)
-
-        if len(ps) < 1:
-            pred.unsqueeze_(0)
-
-        if len(ps) < 2:
-            pred.unsqueeze_(0)
