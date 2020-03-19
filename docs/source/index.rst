@@ -11,11 +11,11 @@ Welcome to pytorch-metrics's documentation!
 .. toctree::
    :maxdepth: 2
    :name: docs
-   :caption: Python API
+   :caption: Metrics
    
    regression
    classification
-   
+   wrappers
 
 
 Indices and tables
