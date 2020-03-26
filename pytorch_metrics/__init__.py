@@ -6,13 +6,27 @@ same for all the differnt metrics.
 Each metric support two modes of evaluation: single evaluation and multi update
 evaluation. In this single evaluation, we have a single target and prediction
 and want to get the metric for this pair. We can get that value by calling:
-    
+
+.. code-block:: python
+
     m = Metric()
     val = m(target, prediction)
     
-In the second case, we can imagine we have a loop over data, but want to
+In the second case, we can imagine we have a loop over data, thus we do not
+have access to all targets and predictions at the same time and we therefore
+need to accumulate stats. In this case we can get the value by:
+    
+.. code-block:: python
 
+    m = Metric()
+    for data, target in Dataloader(...):
+        prediction = model(data)
+        m.update(target, prediction)
+    val = m.compute()    
 
+All metrics support cpu and gpu calculations (hopefully multi gpu and tpu
+support in the future). If the documentation of the individual metrics are
+missing, they should behave similar to their sklearn counterpart. 
 
 """
 

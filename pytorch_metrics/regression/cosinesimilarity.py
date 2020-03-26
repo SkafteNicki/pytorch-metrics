@@ -11,6 +11,13 @@ from pytorch_metrics.utils import check_non_zero_sample_size
 
 
 class CosineSimilarity(RegressionMetric):
+    """
+    Measures the angle between two non-zero vectors:
+        
+    :math:`metric(x,y)=\dfrac{x\cdot y}{||x|| \cdot ||y||}`
+    
+    more info `here <https://en.wikipedia.org/wiki/Cosine_similarity>`_
+    """
     name = "cosinesimilarity"
     memory_efficient = True
 

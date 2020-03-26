@@ -1,8 +1,15 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Mar  6 09:14:44 2020
+Regression metrics are meant to be used in task where both the target and 
+the predictions are real continues variables. The input to a regression metric
 
-@author: nsde
+* `target`: either a `(N,)` vector with samples or a `(N,D)` vector with N samples
+    from D different regression tasks.
+* `pred`: either a `(N,)` vector with samples or a `(N,D)` vector with N samples
+    from D different regression tasks. 
+
+If `target` and `pred` is both `(N,)` vector of samples the output value will
+be a single scalar, whereas if `target` and `pred` is matrices `(N,D)` the output
+will be a `(D,)` torch tensor.
 """
 
 from .meansquarederror import MeanSquaredError
