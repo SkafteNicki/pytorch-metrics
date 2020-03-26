@@ -7,8 +7,10 @@ pytorch. The library is hugely inspiret by [ignites.Metric](https://pytorch.org/
 module, but is intented to be a standalon library for only computing metrics 
 on pytorch tensor. The goal is to get as many of the [sklearn.metrics](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.metrics) ported to pytorch.
 
-Availble metrics (more to come):
+Availble metrics:
+
 * Regression metrics
+
     - MeanSquaredError
     - MeanAbsoluteError
     - RootMeanSquaredError
@@ -21,6 +23,7 @@ Availble metrics (more to come):
     - MeanGammaDeviance
     - CosineSimilarity
     - Correlation
+    
 * Classification metrics
     - Accuracy
     - BalancedAccuracy

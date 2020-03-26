@@ -105,3 +105,38 @@ class Sum(Reduce):
 class Product(Reduce):
     def __init__(self, base_metric):
         super().__init__(base_metric, reduction=torch.prod)
+
+
+class DistributedMetric(Metric, DataParallel):
+    def __init__(self, metric, device_ids=None, output_device=None, dim=0):
+        super(DataParallel, self).__init__()  
+        
+    def reset(self):
+        self.metric.reset()
+        
+    def update(self, target, pred):
+        self.metric.update()
+        
+    def compute(self):
+        self._sync_all()
+        return self.metric.compute()
+    
+    def _sync_all(self):
+        for attr in self._gather_variables:
+            t = getattr(self, attr, None)
+            if t is not None:
+                t = self._sync_gather(t)
+                setattr(self, attr, t)
+        for attr in self._sum_variables:
+            t = getattr(self, attr, None)
+            if t is not None:
+                t = self._sync_sum(t)
+                setattr(self, attr, t)
+                
+    def _sync_sum(self):
+        pass
+    
+    def _sync_all(self):
+    
+    
+    

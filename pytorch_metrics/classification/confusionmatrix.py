@@ -29,7 +29,9 @@ class ConfusionMatrix(ClassificationMetric):
 
         d = target.shape[-1]
         batch_vec = torch.arange(target.shape[-1])
-        unique_labels = batch_vec * num_classes**2 + target * num_classes + pred
+        # this will account for multilabel
+        unique_labels = batch_vec * self._num_classes**2 \
+            + target * self._num_classes + pred
 
         bins = torch.bincount(unique_labels, minlength=d*self._num_classes ** 2)
         bins = bins.reshape(d, self._num_classes, self._num_classes).squeeze()

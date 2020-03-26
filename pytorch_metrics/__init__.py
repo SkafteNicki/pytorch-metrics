@@ -1,8 +1,19 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Mar  6 07:54:43 2020
+The library is a collection of the most used metrics within deep learning in
+pytorch. It is intended to be easy to used with the API being simple and the
+same for all the differnt metrics.
 
-@author: nsde
+Each metric support two modes of evaluation: single evaluation and multi update
+evaluation. In this single evaluation, we have a single target and prediction
+and want to get the metric for this pair. We can get that value by calling:
+    
+    m = Metric()
+    val = m(target, prediction)
+    
+In the second case, we can imagine we have a loop over data, but want to
+
+
+
 """
 
 __version__ = "0.1"
