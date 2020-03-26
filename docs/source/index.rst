@@ -17,7 +17,6 @@ Welcome to pytorch-metrics's documentation!
    classification
    wrappers
 
-
 Indices and tables
 ==================
 
