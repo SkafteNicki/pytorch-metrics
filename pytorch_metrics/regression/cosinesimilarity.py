@@ -17,6 +17,10 @@ class CosineSimilarity(RegressionMetric):
     :math:`metric(x,y)=\dfrac{x\cdot y}{||x|| \cdot ||y||}`
     
     more info `here <https://en.wikipedia.org/wiki/Cosine_similarity>`_
+    
+    Args:
+        transform: transform to apply before calculating metric
+    
     """
     name = "cosinesimilarity"
     memory_efficient = True

@@ -9,6 +9,16 @@ from .recall import Recall
 
 
 class BalancedAccuracy(Recall):
+    """
+    Calculates a balanced version of standard accuracy that accounts for
+    imbalance in the dataset. It is defined as the average of recall obtained
+    on each class.
+    
+    Args: 
+        transform: transform to apply before calculating metric
+    
+    """
+    
     name = 'balancedaccuracy'
     memory_efficient = True
     

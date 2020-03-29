@@ -159,6 +159,9 @@ class Product(Reduce):
 
 
 class DistributedMetric(Metric):
+    """
+    under development
+    """
     def __init__(self, metric, device_ids=None, output_device=None, dim=0):
         super().__init__()
         

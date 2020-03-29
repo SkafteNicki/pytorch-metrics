@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Mar  6 09:14:32 2020
+Classification metrics are meant to be used in tasks where the target 
 
-@author: nsde
+
 """
 
 from .accuracy import Accuracy

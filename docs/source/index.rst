@@ -8,14 +8,18 @@ Welcome to pytorch-metrics's documentation!
 
 .. automodule:: pytorch_metrics
 
+-------------------
+Implemented metrics
+-------------------
+
 .. toctree::
    :maxdepth: 2
    :name: docs
-   :caption: Metrics
    
    regression
    classification
    wrappers
+   transforms
 
 -------------------------
 Note on memory efficiency

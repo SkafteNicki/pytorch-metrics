@@ -73,9 +73,8 @@ class ClassificationMetric(Metric):
     name = "classificationmetric"
     memory_efficient = True
 
-    def __init__(self, transform=None, is_multilabel=False):
+    def __init__(self, transform=None):
         super().__init__(transform)
-        self._is_multilabel = is_multilabel
         self._type = None
         self._num_classes = None
 

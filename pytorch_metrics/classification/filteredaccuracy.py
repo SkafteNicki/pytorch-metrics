@@ -10,10 +10,19 @@ from .accuracy import Accuracy
 
 
 class FilteredAccuracy(Accuracy):
+    """
+    FilteredAccuracy can be used to calculate the accuracy on a subset of the
+    classes.
+    
+    Args: 
+        transform: transform to apply before calculating metric
+        labels_to_ignore: `list` with labels that should be ignored
+    
+    """
     name = 'filteredaccuracy'
     memory_efficient = True
     
-    def __init__(self, transform=None, is_multilabel=False, labels_to_ignore=[]):
+    def __init__(self, transform=None, labels_to_ignore=[]):
         self.labels_to_ignore = labels_to_ignore
         super().__init__(transform, is_multilabel)
 

@@ -3,7 +3,7 @@
 Created on Fri Mar  6 11:37:27 2020
 
 @author: nsde
-"""
+"""""
 
 import torch
 from pytorch_metrics import ClassificationMetric
@@ -11,6 +11,13 @@ from pytorch_metrics.utils import check_non_zero_sample_size
 
 
 class Accuracy(ClassificationMetric):
+    """
+    Calculate the accuracy i.e. how often the predictions and target are consistent
+    
+    Args: 
+        transform: transform to apply before calculating metric
+    
+    """
     name = 'accuracy'
     memory_efficient = True
     

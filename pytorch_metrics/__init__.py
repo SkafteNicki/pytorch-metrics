@@ -42,6 +42,8 @@ from .base import Metric, RegressionMetric, ClassificationMetric
 
 from .wrappers import MetricCollection, RunningAverage, Mean, Sum, Product
 
+from . import transforms
+
 from .regression import (
     MeanSquaredError,
     MeanAbsoluteError,
